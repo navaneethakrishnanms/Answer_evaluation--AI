@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Answer Paper Evaluation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 Automated Answer Paper Evaluation System</h1>
+            <p class="subtitle">AI-Powered Answer Script Assessment</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-item" id="questionStatus">
+                <span class="status-icon">📄</span>
+                <span class="status-text">Question Paper: <span id="questionPaperStatus">Not Loaded</span></span>
+            </div>
+            <div class="status-item" id="answerStatus">
+                <span class="status-icon">✅</span>
+                <span class="status-text">Answer Key: <span id="answerKeyStatus">Not Loaded</span></span>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-card">
+                <div class="card-header">
+                    <h2>📋 Step 1: Upload Question Paper</h2>
+                    <p>Upload the PDF containing questions with marks</p>
+                </div>
+                <div class="upload-area" id="questionUploadArea">
+                    <input type="file" id="questionPaper" accept=".pdf" hidden>
+                    <div class="upload-content">
+                        <span class="upload-icon">📄</span>
+                        <p class="upload-text">Click or drag to upload Question Paper PDF</p>
+                        <p class="upload-hint">Format: Q1. Question text? (5 marks)</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="uploadQuestionPaper()">Upload Question Paper</button>
+                <div class="progress-container" id="questionProgress" style="display: none;">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="message" id="questionMessage"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="card-header">
+                    <h2>📝 Step 2: Upload Answer Key</h2>
+                    <p>Upload the PDF containing correct answers</p>
+                </div>
+                <div class="upload-area" id="answerUploadArea">
+                    <input type="file" id="answerKey" accept=".pdf" hidden>
+                    <div class="upload-content">
+                        <span class="upload-icon">✅</span>
+                        <p class="upload-text">Click or drag to upload Answer Key PDF</p>
+                        <p class="upload-hint">Format: Answer 1: Answer text...</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="uploadAnswerKey()">Upload Answer Key</button>
+                <div class="progress-container" id="answerProgress" style="display: none;">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="message" id="answerMessage"></div>
+            </div>
+
+            <div class="upload-card">
+                <div class="card-header">
+                    <h2>✍️ Step 3: Evaluate Student Paper</h2>
+                    <p>Upload student's handwritten answer script for evaluation</p>
+                </div>
+                <div class="upload-area" id="studentUploadArea">
+                    <input type="file" id="studentPaper" accept=".pdf" hidden>
+                    <div class="upload-content">
+                        <span class="upload-icon">📑</span>
+                        <p class="upload-text">Click or drag to upload Student Answer Paper</p>
+                        <p class="upload-hint">Handwritten or typed answers</p>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="evaluateStudentPaper()" id="evaluateBtn">Evaluate Paper</button>
+                <div class="progress-container" id="studentProgress" style="display: none;">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="message" id="studentMessage"></div>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <div class="results-card">
+                <div class="card-header">
+                    <h2>📊 Evaluation Results</h2>
+                </div>
+                
+                <div class="results-summary">
+                    <div class="result-item">
+                        <div class="result-label">Total Marks</div>
+                        <div class="result-value" id="totalMarks">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Obtained Marks</div>
+                        <div class="result-value" id="obtainedMarks">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Percentage</div>
+                        <div class="result-value" id="percentage">0%</div>
+                    </div>
+                </div>
+
+                <div class="grade-display" id="gradeDisplay">
+                    <span class="grade-label">Grade:</span>
+                    <span class="grade-value" id="gradeValue">-</span>
+                </div>
+
+                <div class="question-wise-results">
+                    <h3>Question-wise Breakdown</h3>
+                    <table class="results-table" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Q. No.</th>
+                                <th>Max Marks</th>
+                                <th>Obtained</th>
+                                <th>Percentage</th>
+                                <th>Feedback</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="download-section">
+                    <button class="btn btn-download" onclick="downloadResult()">
+                        <span>⬇️ Download Result PDF</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

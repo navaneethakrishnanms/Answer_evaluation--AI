@@ -1,0 +1,58 @@
+AI ANSWER EVALUATION SYSTEM - FINAL WORKFLOW SUMMARY
+====================================================
+
+OBJECTIVE
+---------
+Run a fully local answer-evaluation loop where handwritten student sheets are converted to text with DeepSeek-OCR, mapped to questions and answer keys, and then scored generously by Ollama's `llama3` model with concept-based prompts. The system returns liberal marks, friendly feedback, and downloadable PDFs.
+
+CORE COMPONENTS
+---------------
+1. Flask API (`app.py`)
+   * Routes to upload question papers, answer keys, and student papers
+   * Manages file storage, validations, and error handling
+2. `pdf_processor.py`
+   * Extracts text from PDFs, falls back to DeepSeek-OCR for handwritten pages
+   * Parses questions (with marks), answer keys, and student answers using regex + normalization
+3. `deepseek_ocr.py`
+   * Lazy-loads the DeepSeek-OCR transformer
+   * Converts handwritten PDFs to text, retrying with multiple configs for reliability
+4. `vector_db_manager.py`
+   * Stores parsed questions/answers in ChromaDB with MiniLM embeddings for quick lookup
+5. `ollama_evaluator.py`
+   * Calls `ollama run llama3` with a liberal JSON-only prompt
+   * Enforces generous scoring bands and extracts structured feedback
+6. `pdf_generator.py`
+   * Creates searchable OCR PDFs for students and detailed result PDFs summarizing scores
+
+END-TO-END FLOW
+---------------
+1. **Upload Question Paper**
+   * Extract questions + marks -> store in vector DB
+2. **Upload Answer Key**
+   * Extract model answers -> store in vector DB
+3. **Upload Student Paper**
+   * DeepSeek-OCR converts handwriting -> parse student answers (regex tiers)
+4. **Evaluate**
+   * For each question: fetch model answer + student response + max marks
+   * Send structured prompt to Ollama with liberal-scoring rules
+   * Parse returned JSON (marks, concept score, feedback)
+5. **Report**
+   * Aggregate totals, grade, percentage, and per-question notes
+   * Generate PDF + optional OCR text PDF for auditing
+
+RUN GUIDE
+---------
+1. Install dependencies: `pip install -r requirements.txt`
+2. Ensure Ollama is running and `ollama pull llama3`
+3. Launch the app: `python app.py` (or use `start_fixed.bat`)
+4. Open `http://localhost:5000`
+5. Upload: question paper -> answer key -> student paper -> download results
+
+DESIGN NOTES
+------------
+- Parsing relies on deterministic regex patterns (O(n) scans) plus normalization to keep lookups fast
+- Question/answer lookup uses hash maps keyed by question number for O(1) retrieval
+- Liberal evaluation prompt enforces minimum partial credit and consistent positivity
+- DeepSeek-OCR retries with reduced resolutions/crop settings to handle noisy scans
+
+Use this file as the single authoritative text reference for the project. All other documentation lives in code comments and the final README.
